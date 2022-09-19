@@ -60,7 +60,9 @@ Documentação do Laboratório 007 - Bloco Delta (SBC)
 - Placa de aquisição A/D National Instruments [NI PCI-6120](https://www.ni.com/docs/en-US/bundle/ni-611x-612x-613x-6143-features/resource/370781h.pdf) 
 - Bloco de conectores BNC para placas National Instruments [BNC-2110](https://www.ni.com/docs/en-US/bundle/bnc-2110-getting-started/resource/372121f.pdf) (2x)
 - Bloco de conectores BNC para placas National Instruments [BNC-2120](https://www.ni.com/docs/en-US/bundle/bnc-2120-getting-started/resource/372123d.pdf) com encoder de quadratura, sensores de temperatura, gerador de funções
-- Controladores PID para temperatura (?) (Modelo? quantos?)
+- Controladores PID 
+    - West [6400](https://www.west-cs.com/assets/Manuals/59228-4-N6400-Concise-manual-EN.pdf)
+    - West [6100+](https://www.west-cs.com.br/wp-content/uploads/2019/03/Manual-Controladores-West-S%C3%A9rie-P-Plus_rev2016_1.pdf)
 - Fluxômetros de massa (2x)
 - Controlador e Servomotor [WEG SCA-05](https://versatronicsul.com.br/wp-content/uploads/2019/02/WEG-SCA-05.pdf)
 - Válvulas solenóide (?)
