@@ -70,4 +70,5 @@ Documentação do Laboratório 007 - Bloco Delta (SBC)
 - Câmera de alta velocidade [Photron Fastcam X1280 PCI](https://www.manualslib.com/manual/831125/Photron-Fastcam-X-1280pci.html#manual)
 
 ## Informática
-- Computadores ???
+- Computadores:
+	- Intel Core i7-4790, 8Gb RAM 
