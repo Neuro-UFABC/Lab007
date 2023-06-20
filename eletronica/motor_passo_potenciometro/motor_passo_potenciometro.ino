@@ -1,8 +1,10 @@
-// controla motor pedreirão
+// controla caixinha apontadora com motor de passo e potenciômetro
 
 
-#define dirPin 2   // pino 2 arduino no DIR+ do driver
-#define stepPin 3  // pino 3 arduino no STEP+ do driver
+#define dirPin 2   // pino dig 2 arduino no DIR+ do driver
+#define stepPin 3  // pino dig 3 arduino no STEP+ do driver
+#define enablePin 4  // pino dig 4 arduino no EN+ do driver
+#define botaoPin 5  // pino dig 4 arduino no EN+ do driver
 
 struct CFG {
   unsigned int delay;
@@ -13,13 +15,27 @@ void default_config(){
   config.delay = 5000;
 }
 
-void setup() {
+void habilita_motor(){
+    digitalWrite(enablePin, LOW);
+}
+void desabilita_motor(){
+    digitalWrite(enablePin, HIGH);
+}
 
+
+void setup() {
+  
+  pinMode(enablePin, OUTPUT);
+  desabilita_motor();
 
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
 
-  // escolhe direção, acho que HIGH é anti-horário
+
+  pinMode(botaoPin, INPUT_PULLUP);
+
+
+  // escolhe direção, depende do motor pra saber se HIGH é anti ou horário
   digitalWrite(dirPin, HIGH);
 
   default_config();
@@ -27,11 +43,15 @@ void setup() {
   Serial.begin(9600);
 }
 
+
 void passo() {
+  habilita_motor();
   digitalWrite(stepPin, HIGH);
   delayMicroseconds(config.delay);
   digitalWrite(stepPin, LOW);
   delayMicroseconds(config.delay);
+  desabilita_motor();
+
 }
 
 void pot(){
@@ -63,6 +83,7 @@ void passos(){
   }
 }
 
+
 void loop() {
   char cmd;
    while (Serial.available() > 0) {
@@ -77,6 +98,9 @@ void loop() {
         case 'c':
           cfg();
           break;
+        case 'b':
+          Serial.println(!digitalRead(botaoPin));
+          break;  
         default:
           break;
       }
