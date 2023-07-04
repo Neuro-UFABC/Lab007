@@ -2,6 +2,9 @@ import time
 import sounddevice as sd
 from scipy.io.wavfile import write, read
 
+sd.default.device = ['h6', 'sysdefault']  # TODO: cuidado, depende do comp
+
+
 def toca_audio(arquivo_wav, lado='ambos', taxa=None):
     if lado == 'ambos':
         lmap = [1,2]
@@ -33,8 +36,9 @@ def toca_grava(estimulo, saida):
     print(f'Começando gravação')
 
     gravacao = sd.playrec(est_array, taxa_wav, channels=2, blocking=True)
-    write(saida, taxa_wav, gravacao)  
-    
+    sd.wait()
+    write(saida, taxa_wav, gravacao)
+
     print(f'Gravação concluída. Salvo arquivo {saida}.')
 
 
@@ -47,7 +51,7 @@ def grava_binaural(segundos, fname):
     print(f'Começando gravação de {segundos}s')
     rec = sd.rec(int(segundos * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
-    write(fname, fs, rec)  
+    write(fname, fs, rec)
     print(f'Gravação concluída. Salvo arquivo {fname}.')
 
 if __name__ == '__main__':
