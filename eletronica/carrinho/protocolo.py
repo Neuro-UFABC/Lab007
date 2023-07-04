@@ -3,6 +3,10 @@ import time
 from audio_utils import grava_binaural, toca_grava
 from carrinho import Carrinho
 
+import sounddevice as sd
+
+sd.default.device = ['h6', 'sysdefault']  # TODO: cuidado, depende do comp
+
 
 with Carrinho() as c:
 

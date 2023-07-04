@@ -2,7 +2,6 @@ import time
 import sounddevice as sd
 from scipy.io.wavfile import write, read
 
-sd.default.device = ['h6', 'sysdefault']  # TODO: cuidado, depende do comp
 
 
 def toca_audio(arquivo_wav, lado='ambos', taxa=None):
