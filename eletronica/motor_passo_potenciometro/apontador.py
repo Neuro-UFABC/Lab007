@@ -1,6 +1,7 @@
 import serial
 import time
 import serial
+from scipy.interpolate import interp1d
 
 class Apontador:
     def __init__(self):
@@ -12,6 +13,12 @@ class Apontador:
         print('Usando calibração tosca!! lembre-se de calibrar!!')
         self.pot_min = 23  
         self.pot_max = 694
+
+
+        # TODO: isso precisa ser medido!
+        self.angulo_max = 80
+        self.angulo_min = -70
+
 
     def __enter__(self):
         return self
@@ -37,13 +44,17 @@ class Apontador:
     def espera_botao(self):
         bot = self._cmd('b')
         t_aperta = 0
-        while t_aperta < 15:
+        while t_aperta < 5:
             if self._cmd('b') != bot:
                 t_aperta += 1
             else:
                 t_aperta = 0
             time.sleep(0.001)
-
+    
+    def quantos_graus(self):
+        interp = interp1d([self.pot_min, self.pot_max],
+                [self.angulo_min, self.angulo_max])
+        return interp(self.le_pot()).tolist()
 
     def calibra(self):
         print('Aponte para o máximo do alto.')
