@@ -15,16 +15,26 @@ class Carrinho:
     def __exit__(self, exc_type, exc_value, traceback):
         self._ser.close()
 
-    def sobe(self, passos):
-        self._cmd(passos)
 
     def sobe_mm(self, mm):
         passos = int(self.passos_mm * mm)
         print(f'Vou dar {passos} passos')
-        self._cmd(passos)
+        self.sobe(passos)
+
+    def desce_mm(self, mm):
+        passos = int(self.passos_mm * mm)
+        print(f'Vou dar {passos} passos')
+        self.desce(passos)
+
+    def delay(self, delay):
+        print(f'Ajustando delay para {delay} ms')
+        self._cmd(f'c{delay}')
+
+    def sobe(self, passos):
+        self._cmd(f'p{passos}')
 
     def desce(self, passos):
-        self._cmd(f'-{passos}')
+        self._cmd(f'p-{passos}')
 
     def _cmd(self, arg):
         scmd = str(arg) + '\n'
