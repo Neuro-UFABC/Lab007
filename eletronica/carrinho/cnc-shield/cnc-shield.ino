@@ -12,6 +12,7 @@ private:
   unsigned int stepPin;
 public:
   unsigned int delay = 200;
+
   Driver(char qualMotor) {
     switch (qualMotor) {
       case 'x':
@@ -41,7 +42,9 @@ public:
 
   void passo() {
     digitalWrite(stepPin, HIGH);
-    delayMicroseconds(delay);
+    //delayMicroseconds(delay);
+    delayMicroseconds(10);
+
     digitalWrite(stepPin, LOW);
     delayMicroseconds(delay);
   }
