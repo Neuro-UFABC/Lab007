@@ -4,7 +4,7 @@ import serial
 from math import sin, cos, radians, pi
 
 class Carrinho:
-    def __init__(self):
+    def __init__(self, modo='azimute'):
         #self._ser = serial.Serial('/dev/ttyACM0') # TODO: pode ser outra
         self._ser = serial.Serial('/dev/ttyUSB0') # TODO: pode ser outra
         print('Aberta serial', self._ser.name)
@@ -12,12 +12,16 @@ class Carrinho:
         self.passos_mm = 40  # precisa calibrar!!!
         self.raio = 800  # precisa calibrar!!!
         self.azim = -90
-        self.modo = 'azimute'
+        self.modo = modo
 
     def __enter__(self):
+        if self.modo == 'eleva':
+            self.habilita_motores() 
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        if self.modo == 'eleva':
+            self.desabilita_motores()
         self._ser.close()
 
     def habilita_motores(self):
@@ -46,9 +50,14 @@ class Carrinho:
             self.desabilita_motores()
 
     def zera(self):
+        self.desabilita_motores()
         input('Ponha manualmente na origem e aperte Enter...')
         self.azim = -90
+        self.habilita_motores()
         self.anda_mm('grande', +70)
+        if self.modo == 'azimute':
+            self.desabilita_motores()
+        
         
 
     def anda_azim(self, azim):
