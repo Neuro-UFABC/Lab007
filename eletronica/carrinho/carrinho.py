@@ -58,7 +58,8 @@ class Carrinho:
         if self.modo == 'azimute':
             self.desabilita_motores()
         
-        
+    def anda_eleva(self, eleva):
+        self.anda_azim(eleva) 
 
     def anda_azim(self, azim):
 
