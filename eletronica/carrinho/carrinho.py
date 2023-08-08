@@ -12,6 +12,7 @@ class Carrinho:
         self.passos_mm = 40  # precisa calibrar!!!
         self.raio = 800  # precisa calibrar!!!
         self.azim = -90
+        self.modo = 'azimute'
 
     def __enter__(self):
         return self
@@ -24,36 +25,36 @@ class Carrinho:
         
     def desabilita_motores(self):
         self._cmd('d')
-    
-    def anda_grande_mm(self, mm):
-        self.habilita_motores()
+
+    def anda_mm(self, eixo, mm):
+        if eixo not in ('grande', 'pequeno'):
+            print("anda_mm recebe como primeiro parâmetro 'grande' ou 'pequeno'")
+            return
+
+        if self.modo == 'azimute':
+            self.habilita_motores()
+
         passos = int(self.passos_mm * mm)
         dir = '+' if mm > 0 else '-'
         passos = int(abs(mm) * self.passos_mm)
-        print(f'Vou dar {dir}{passos} passos na grande')
-        self._cmd(f'py{dir}{passos}')
-        self.desabilita_motores()
+        print(f'Vou dar {dir}{passos} passos no eixo {eixo}')
 
-    def anda_peq_mm(self, mm):
-        self.habilita_motores()
-        passos = int(self.passos_mm * mm)
-        dir = '+' if mm > 0 else '-'
-        passos = int(abs(mm) * self.passos_mm)
-        print(f'Vou dar {dir}{passos} passos na pequeno')
-        self._cmd(f'px{dir}{passos}')
-        self.desabilita_motores()
+        xy = 'x' if eixo == 'pequeno' else 'y'
+        self._cmd(f'p{xy}{dir}{passos}')
 
+        if self.modo == 'azimute':
+            self.desabilita_motores()
 
     def zera(self):
         input('Ponha manualmente na origem e aperte Enter...')
         self.azim = -90
-        self.anda_grande_mm(+70)
+        self.anda_mm('grande', +70)
         
 
     def anda_azim(self, azim):
 
         def r(azim):
-            # Azimute ref experimento para radianos usuais
+            # referencial do experimento para radianos usuais
             return -(azim - 90) * pi / 180
 
         th0 = r(self.azim)
@@ -62,8 +63,8 @@ class Carrinho:
         dgrande = self.raio * (cos(th1) - cos(th0))
         dpeq = self.raio * (sin(th1) - sin(th0))
 
-        self.anda_grande_mm(dgrande)
-        self.anda_peq_mm(dpeq)
+        self.anda_mm('grande', dgrande)
+        self.anda_mm('pequeno', dpeq)
 
         self.azim = azim
 
