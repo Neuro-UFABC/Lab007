@@ -11,6 +11,7 @@ class Carrinho:
         time.sleep(2) # espera arduino resetar
         self.passos_mm = 40  # precisa calibrar!!!
         self.raio = 800  # precisa calibrar!!!
+        self.azim = -90
 
     def __enter__(self):
         return self
@@ -45,32 +46,27 @@ class Carrinho:
 
     def zera(self):
         input('Ponha manualmente na origem e aperte Enter...')
-        self.azim = 90
-        self.anda_grande_mm(-70)
+        self.azim = -90
+        self.anda_grande_mm(+70)
+        
 
     def anda_azim(self, azim):
-        dazim = azim - self.azim
-        if self.azim > 0:
-            if dazim > 0:
-                dirx = -1 
-                diry = +1
-            else:
-                dirx = +1
-                diry = -1
-        else:
-            if dazim > 0:
-                dirx = +1 
-                diry = +1
-            else:
-                dirx = -1
-                diry = -1
 
-        self.anda_grande_mm(self.raio * 
-                diry * abs(sin(azim*pi/180) - sin(self.azim*pi/180)))
-        self.anda_peq_mm(self.raio * 
-                dirx * abs(cos(azim*pi/180) - cos(self.azim*pi/180)))
+        def r(azim):
+            # Azimute ref experimento para radianos usuais
+            return -(azim - 90) * pi / 180
+
+        th0 = r(self.azim)
+        th1 = r(azim)
+
+        dgrande = self.raio * (cos(th1) - cos(th0))
+        dpeq = self.raio * (sin(th1) - sin(th0))
+
+        self.anda_grande_mm(dgrande)
+        self.anda_peq_mm(dpeq)
 
         self.azim = azim
+
 
     def sobe_mm(self, mm):
         passos = int(self.passos_mm * mm)

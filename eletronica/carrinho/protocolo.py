@@ -10,8 +10,8 @@ sd.default.device = ['h6', 'sysdefault']  # TODO: cuidado, depende do comp
 
 with Carrinho() as c:
 
-    posicoes =  [51, 440, 336, 354, 454]
-    for i,p in enumerate(posicoes):
-        c.sobe_mm(p)
-        time.sleep(15)
+    azimutes =  [90, 45, 0, -45, -90]
+    for i,p in enumerate(azimutes):
+        c.anda_azim(p)
+        time.sleep(10)
         toca_grava('estimulo.wav', f'{i}.wav')
