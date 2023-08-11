@@ -30,6 +30,25 @@ class Carrinho:
     def desabilita_motores(self):
         self._cmd('d')
 
+    def anda_xy_mm(self, mm_x, mm_y):
+
+        if self.modo == 'azimute':
+            self.habilita_motores()
+
+        dirx = '+' if mm_x > 0 else '-'
+        passosx = int(abs(mm_x) * self.passos_mm)
+
+        diry = '+' if mm_y > 0 else '-'
+        passosy = int(abs(mm_y) * self.passos_mm)
+
+        print(f'Vou dar {diry}{passosy} passos no eixo '
+                f'grande e {dirx}{passosx} no eixo pequeno')
+
+        self._cmd(f'P{dirx}{passosx},{diry}{passosy}')
+
+        if self.modo == 'azimute':
+            self.desabilita_motores()
+
     def anda_mm(self, eixo, mm):
         if eixo not in ('grande', 'pequeno'):
             print("anda_mm recebe como primeiro parâmetro 'grande' ou 'pequeno'")
@@ -38,7 +57,6 @@ class Carrinho:
         if self.modo == 'azimute':
             self.habilita_motores()
 
-        passos = int(self.passos_mm * mm)
         dir = '+' if mm > 0 else '-'
         passos = int(abs(mm) * self.passos_mm)
         print(f'Vou dar {dir}{passos} passos no eixo {eixo}')
@@ -73,8 +91,7 @@ class Carrinho:
         dgrande = self.raio * (cos(th1) - cos(th0))
         dpeq = self.raio * (sin(th1) - sin(th0))
 
-        self.anda_mm('grande', dgrande)
-        self.anda_mm('pequeno', dpeq)
+        self.anda_xy_mm(dpeq, dgrande)
 
         self.azim = azim
 
