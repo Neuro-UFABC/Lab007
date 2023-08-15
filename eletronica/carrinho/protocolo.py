@@ -1,7 +1,7 @@
 import time
 
-from audio_utils import grava_binaural, toca_grava
-from carrinho import Carrinho
+from audio007.audio_utils import grava_binaural, toca_grava
+from audio007.carrinho import Carrinho
 
 import sounddevice as sd
 
