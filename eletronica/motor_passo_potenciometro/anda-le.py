@@ -1,5 +1,5 @@
 import time
-from apontador import Apontador
+from audio007.apontador import Apontador
 
 import matplotlib.pyplot as plt
 import numpy as np

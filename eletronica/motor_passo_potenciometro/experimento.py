@@ -1,10 +1,12 @@
 import sys
 import time
 from random import shuffle
-from apontador import Apontador
 from glob import glob
 import pathlib
 from datetime import datetime
+
+
+from audio007.apontador import Apontador
 
 import sounddevice as sd
 from scipy.io.wavfile import read
