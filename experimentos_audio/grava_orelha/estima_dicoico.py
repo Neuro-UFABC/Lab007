@@ -4,8 +4,8 @@ from random import shuffle
 import numpy as np
 from glob import glob
 
-from audio_utils import grava_binaural, toca_audio
-from apontador  import Apontador
+from audio007.audio_utils import grava_binaural, toca_audio
+from audio007.apontador import Apontador
 
 print('Usando dir', sys.argv[1])
 os.chdir(sys.argv[1])
