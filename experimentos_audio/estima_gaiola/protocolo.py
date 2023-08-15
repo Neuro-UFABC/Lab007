@@ -2,9 +2,9 @@ import time
 from random import shuffle
 import numpy as np
 
-from audio_utils import grava_binaural, toca_audio
-from carrinho import Carrinho
-from apontador  import Apontador
+from audio007.audio_utils import grava_binaural, toca_audio
+from audio007.carrinho import Carrinho
+from audio007.apontador  import Apontador
 
 nome = input('Nome do participante\n')
 
