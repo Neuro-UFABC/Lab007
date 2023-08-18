@@ -14,13 +14,16 @@ quem = input('Nome do participante\n')
 os.mkdir(quem)
 os.chdir(quem)
 
-with Carrinho() as c:
+estimulo = 'chiado_silencio'
+est_path = f'../{estimulo}.wav'
+
+with Carrinho(modo='eleva') as c:
     c.zera()
-    toca_grava('../burst500hz_silencio.wav', f'/tmp/lixo.wav') # TODO: o primeiro grava mal
+    toca_grava(est_path, f'/tmp/lixo.wav') # TODO: o primeiro grava mal
 
     azimutes = range(-80,90,10)
 
     for az in azimutes:
         px, py = c.anda_azim(az)
         time.sleep(np.max(np.abs([px,py]))/3200 + 0.5)
-        toca_grava('../burst500hz_silencio.wav', f'{quem}_{az}.wav')
+        toca_grava(est_path, f'{quem}_{estimulo}_{az}.wav')

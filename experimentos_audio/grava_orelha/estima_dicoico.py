@@ -8,18 +8,19 @@ from audio007.audio_utils import grava_binaural, toca_audio
 from audio007.apontador import Apontador
 
 print('Usando dir', sys.argv[1])
-os.chdir(sys.argv[1])
+nome = sys.argv[1][:-1]
+os.chdir(nome)
 
 with Apontador() as a:
     a.calibra()
 
-    repete = 5
+    repete = 1
     sons = repete * list(glob('*.wav')) 
     shuffle(sons)
     estimativas = np.zeros((len(sons),2))
 
     for i,som in enumerate(sons):
-        az = som.split('_')[1].split('.')[0]
+        az = som.split('_')[-1].split('.')[0]
         toca_audio(som)
         a.espera_botao()
         estimativa = a.quantos_graus()
