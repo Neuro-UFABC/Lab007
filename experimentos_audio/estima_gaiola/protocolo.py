@@ -16,7 +16,7 @@ with Carrinho() as c:
 
         a.calibra()
 
-        azimutes =  list(range(-80,80,40)) + list(range(-80,80,40))
+        azimutes =  2 * list(range(-80,90,40))
         estimativas = np.zeros((len(azimutes),2))
         shuffle(azimutes)
 
