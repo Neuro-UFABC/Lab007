@@ -16,8 +16,10 @@ os.chdir(quem)
 
 with Carrinho() as c:
     c.zera()
+    toca_grava('../burst500hz_silencio.wav', f'/tmp/lixo.wav') # TODO: o primeiro grava mal
 
-    azimutes = range(-90,90,10)
+    azimutes = range(-80,90,10)
+
     for az in azimutes:
         px, py = c.anda_azim(az)
         time.sleep(np.max(np.abs([px,py]))/3200 + 0.5)
