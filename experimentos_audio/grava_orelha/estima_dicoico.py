@@ -26,4 +26,4 @@ with Apontador() as a:
         estimativas[i] = [az, estimativa]
         print(f'Verdadeiro:{az}, Estimado:{estimativa}')
 
-np.savetxt(f'estimativas_dicoico_{nome}.txt', estimativas)
+np.savetxt(f'estimativas_dicoico_{nome}.csv', estimativas, delimiter=',', fmt='%g', header='verdadeiro, estimado')

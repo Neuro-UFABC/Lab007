@@ -30,4 +30,4 @@ with Carrinho() as c:
             estimativas[i] = [az, estimativa]
             print(f'Verdadeiro:{az}, Estimado:{estimativa}')
 
-np.savetxt(f'{nome}.txt', estimativas)
+np.savetxt(f'{nome}.csv', estimativas, delimiter=',', fmt='%g', header='azimute, estimativa')
