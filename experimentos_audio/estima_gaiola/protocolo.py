@@ -8,7 +8,7 @@ from audio007.apontador  import Apontador
 
 nome = input('Nome do participante\n')
 
-with Carrinho() as c:
+with Carrinho(modo='eleva') as c:
 
     c.zera()
 
@@ -16,7 +16,7 @@ with Carrinho() as c:
 
         a.calibra()
 
-        azimutes =  2 * list(range(-80,90,40))
+        azimutes =  2 * list(range(-80,90,10))
         estimativas = np.zeros((len(azimutes),2))
         shuffle(azimutes)
 
@@ -24,10 +24,10 @@ with Carrinho() as c:
             print(az)
             px, py = c.anda_azim(az)
             time.sleep(np.max(np.abs([px,py]))/3200 + 0.5)
-            toca_audio('burst500hz.wav')
+            toca_audio('chiado_silencio.wav')
             a.espera_botao()
             estimativa = a.quantos_graus()
             estimativas[i] = [az, estimativa]
             print(f'Verdadeiro:{az}, Estimado:{estimativa}')
 
-np.savetxt(f'{nome}.csv', estimativas, delimiter=',', fmt='%g', header='azimute, estimativa')
+np.savetxt(f'{nome}.csv', estimativas, delimiter=',', fmt='%g', header='elevacao, estimativa')
