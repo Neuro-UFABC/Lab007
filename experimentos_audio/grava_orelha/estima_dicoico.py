@@ -7,9 +7,15 @@ from glob import glob
 from audio007.audio_utils import grava_binaural, toca_audio
 from audio007.apontador import Apontador
 
-print('Usando dir', sys.argv[1])
-nome = sys.argv[1][:-1]
-os.chdir(nome)
+try:
+    print('Usando dir', sys.argv[1])
+    nome = sys.argv[1][:-1]
+    os.chdir(nome)
+except:
+    print('Informe um diretório válido contendo as gravações '
+            'como parâmetro do programa. Ex:\n '
+            '>python estima_dicoico.py XYZ11jan22')
+    sys.exit(1)
 
 with Apontador() as a:
     a.calibra()
