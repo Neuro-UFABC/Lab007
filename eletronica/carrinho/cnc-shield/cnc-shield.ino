@@ -7,10 +7,9 @@
 #define enablePin 8
 
 class Driver {
-private:
+public:
   unsigned int dirPin;
   unsigned int stepPin;
-public:
   unsigned int delay = 200;
 
   Driver(char qualMotor) {
@@ -49,8 +48,12 @@ public:
     delayMicroseconds(delay);
   }
 
-  void passos(unsigned long quantos, int dir) {
+  void direcao(int dir){
     digitalWrite(dirPin, dir);
+  }
+
+  void passos(unsigned long quantos, int dir) {
+    direcao(dir);
     for (unsigned int i = 0; i < quantos; i++) {
       passo();
     }
@@ -59,24 +62,83 @@ public:
 
 Driver x = Driver('x');
 Driver y = Driver('y');
+Driver z = Driver('z');
+
 
 void setup() {
 
   pinMode(enablePin, OUTPUT);
   x.setup();
   y.setup();
+  z.setup();
 
-  desabilita_motor();
+  desabilita_motores();
 
   Serial.begin(9600);
 }
 
-void habilita_motor() {
+void habilita_motores() {
   digitalWrite(enablePin, LOW);
   delayMicroseconds(2);
 }
-void desabilita_motor() {
+void desabilita_motores() {
   digitalWrite(enablePin, HIGH);
+}
+
+void passo_duplo(){
+   digitalWrite(x.stepPin, HIGH);
+   digitalWrite(y.stepPin, HIGH);
+    //delayMicroseconds(delay);
+    delayMicroseconds(10);
+
+    digitalWrite(x.stepPin, LOW);
+    digitalWrite(y.stepPin, LOW);
+
+    delayMicroseconds(delay);
+}
+
+void passos2eixos(){
+  int dirx;
+  int diry;
+
+  long px = Serial.parseInt();
+  if (px > 0) {
+    x.direcao(HIGH);
+  } else {
+    x.direcao(LOW);
+  }
+  px = abs(px);
+
+
+  long py = Serial.parseInt();
+  if (py > 0) {
+    y.direcao(HIGH);
+  } else {
+    y.direcao(LOW);
+  }
+  py = abs(py);
+
+
+  Serial.print(px);   Serial.print(" ");   Serial.println(py);
+
+  while(px + py > 0){
+    if(px > 0){
+      if(py > 0){
+        passo_duplo();
+        px -= 1;
+        py -= 1;
+      }
+      else {
+        x.passo();
+        px -= 1;
+      }
+    }
+    else {
+      y.passo();
+      py -=1 ;
+    }
+  }
+  
 }
 
 void passos() {
@@ -101,6 +163,9 @@ void passos() {
     case 'y':
       y.passos(passos, dir);
       break;
+    case 'z':
+      z.passos(passos, dir);
+      break;
     default:
       break;
   }
@@ -114,11 +179,14 @@ void loop() {
       case 'p':
         passos();
         break;
+      case 'P':
+        passos2eixos();
+        break;
       case 'h':
-        habilita_motor();
+        habilita_motores();
         break;
       case 'd':
-        desabilita_motor();
+        desabilita_motores();
         break;
       default:
         break;
