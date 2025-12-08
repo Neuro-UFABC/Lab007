@@ -25,7 +25,7 @@ with Apontador('eleva') as aponta:
     time.sleep(0.5)
     
 
-    repete = 1
+    repete = 28
     falantes = repete * list(range(1,8))
     #falantes = repete * np.ones(7)
 
