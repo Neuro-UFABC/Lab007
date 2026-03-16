@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import numpy as np
-from random import shuffle
+from random import choice
 from datetime import datetime
 from audio007.audio_utils import grava_binaural, toca_audio, ganho_normalizador
 from audio007.carrinho import Carrinho
@@ -15,18 +15,25 @@ from audio007.apontador import Apontador
 modo = 'azimute'
 
 estimulo = '5tons500HzRampaCos5ms48kHz.wav'
-ref = 'burstcos-70dB.wav'
+ref_normaliza = 'burstcos-70dB.wav'
 
-gn = ganho_normalizador(estimulo, ref)
-
-ang_min = -90
-ang_max = 90
-ang_passo = 15
-repete = 3
 
 ########################################################
 ### em teoria, não precisa mudar nada daqui em diante ##
 ########################################################
+try:
+    seqs = np.loadtxt(sys.argv[1])
+    seq = choice(seqs) 
+except IndexError:
+    print('Forneça o nome do arquivo com a sequência como primeiro argumento')
+    sys.exit(1)
+except FileNotFoundError:
+    print(f'Não consegui ler sequência do arquivo {sys.argv[1]}')
+    sys.exit(1)
+
+gn = ganho_normalizador(estimulo, ref_normaliza)
+
+print(f'## Estima Gaiola equilabrado com sequência {seq}')
 nome = input('Nome do participante\n')
 
 
@@ -43,15 +50,12 @@ with Carrinho(modo=modo) as c:
         a.espera_botao()
         time.sleep(0.5)
         
-        angulos =  repete * list(range(ang_min,ang_max+1,ang_passo))
-        estimativas = np.zeros((len(angulos),3))
+        estimativas = np.zeros((len(seq),3))
         
-        shuffle(angulos)
-            
         lastAng = -90
 
-        for i,ang in enumerate(angulos):
-            print(f'[{i+1}/{len(angulos)}]', end='')
+        for i,ang in enumerate(seq):
+            print(f'[{i+1}/{len(seq)}]', end='')
 
             vel = 3000 if modo == 'azimute' else 2000  # precisa calibrar...
             # pro falante não bater no apontador

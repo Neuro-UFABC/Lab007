@@ -17,7 +17,8 @@ sd.default.latency = [0.1, 0.1]
 modo = 'azimute' #'eleva'
 
 #estimulo = 'chiado_300_3000_silencio_75db'
-estimulo = 'burstcos'
+estimulo = 'variasrampas48'
+#estimulo = '5tons500HzRampaCos5ms48kHz'
 
 angulos = range(-90,91,15)
 
