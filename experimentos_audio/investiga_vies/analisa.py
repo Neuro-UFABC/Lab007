@@ -24,7 +24,7 @@ def plota_estimativas_media(dados, ax=None, color=None, diagonal=False, label=No
         g.index,
         g.values,
         color=color,
-        marker='o',          
+        marker='o',
         linestyle='-',
         label=label
     )
@@ -51,7 +51,7 @@ def plota_estimativas_std(dados, ax=None, color=None, label=None):
         g.index,
         g.values,
         color=color,
-        marker='o',          
+        marker='o',
         linestyle='-',
         label=label
     )
@@ -62,20 +62,23 @@ def plota_estimativas_std(dados, ax=None, color=None, label=None):
 if __name__ == '__main__':
     import sys
     import pandas as pd
-    cond1 = sys.argv[1]
-    cond2 = sys.argv[2]
 
-    suj = pd.read_csv(cond1)
-    suj_outro = pd.read_csv(cond2)
+    def analisa(cond, ax1=None, ax2=None):
+        suj = pd.read_csv(cond)
+        lab = cond.split('/')[-1]
+        diag = True if ax1 is None else False
 
-    lab1 = cond1.split('/')[0]
-    lab2 = cond2.split('/')[0]
-    ax = plota_estimativas_media(suj, diagonal=True, label=lab1)
-    plota_estimativas_media(suj_outro, ax, label=lab2)
-    ax.legend()
-    
-    ax = plota_estimativas_std(suj, label=lab1)
-    plota_estimativas_std(suj_outro, ax, label=lab2)
-    ax.legend()
+        ax1 = plota_estimativas_media(suj, ax1, diagonal=diag, label=lab)
+        ax1.legend()
+
+        ax2 = plota_estimativas_std(suj, ax2, label=lab)
+        ax2.legend()
+
+        return ax1, ax2
+
+    ax1, ax2 = analisa(sys.argv[1])
+
+    for cond in sys.argv[2:]:
+        analisa(cond, ax1, ax2)
 
     plt.show()
