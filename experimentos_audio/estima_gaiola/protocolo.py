@@ -69,13 +69,15 @@ with Carrinho(modo=modo) as c:
 
         for i,ang in enumerate(angulos):
             print(f'[{i+1}/{len(angulos)}]', end='')
+
+            vel = 3200 if modo == 'azim' else 2000  # precisa calibrar...
+
             if ((lastAng >= 45 and ang == -90) or (lastAng <= -45 and ang == 90)):
                 px, py = c.anda_azim_mirado(0)
                 time.sleep(np.max(np.abs([px,py]))/vel + 0.5)
             lastAng = ang
             px, py = c.anda_azim_mirado(ang)
             
-            vel = 3200 if modo == 'azim' else 2000  # precisa calibrar...
             time.sleep(np.max(np.abs([px,py]))/vel + 0.5)
             toca_audio(sons[i]),
             a.espera_botao()

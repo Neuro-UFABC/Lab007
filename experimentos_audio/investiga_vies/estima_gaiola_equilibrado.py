@@ -15,7 +15,7 @@ from audio007.apontador import Apontador
 modo = 'azimute'
 
 estimulo = '5tons500HzRampaCos5ms48kHz.wav'
-ref_normaliza = 'burstcos-70dB.wav'
+ref_normaliza = 'tom500Hz70dB_referencia_para_falante.wav'
 
 
 ########################################################
@@ -27,7 +27,7 @@ try:
 except IndexError:
     print('Forneça o nome do arquivo com a sequência como primeiro argumento')
     sys.exit(1)
-except FileNotFoundError:
+except:
     print(f'Não consegui ler sequência do arquivo {sys.argv[1]}')
     sys.exit(1)
 
@@ -41,8 +41,8 @@ with Carrinho(modo=modo) as c:
     c.zera()
 
     with Apontador(modo=modo) as a:
-        a.calibra_linear()
-        time.sleep(0.5)
+        #a.calibra_linear()
+        #time.sleep(0.5)
         a.calibra()
         time.sleep(0.5)
         
@@ -50,7 +50,7 @@ with Carrinho(modo=modo) as c:
         a.espera_botao()
         time.sleep(0.5)
         
-        estimativas = np.zeros((len(seq),3))
+        estimativas = np.zeros((len(seq),2))
         
         lastAng = -90
 
@@ -58,10 +58,13 @@ with Carrinho(modo=modo) as c:
             print(f'[{i+1}/{len(seq)}]', end='')
 
             vel = 3000 if modo == 'azimute' else 2000  # precisa calibrar...
-            # pro falante não bater no apontador
-            if ((lastAng >= 45 and ang == -90) or (lastAng <= -45 and ang == 90)):
-                px, py = c.anda_azim_mirado(0)
-                time.sleep(np.max(np.abs([px,py]))/vel + 1)
+            # pro falante não bater na cara do cara
+            if lastAng >= 85 and ang == -90:
+                px, py = c.anda_azim_mirado(-75)
+                time.sleep(np.max(np.abs([px,py]))/vel + 0.5)
+            elif lastAng <= -85 and ang == 90:
+                px, py = c.anda_azim_mirado(75)
+                time.sleep(np.max(np.abs([px,py]))/vel + 0.5)
 
             lastAng = ang
             px, py = c.anda_azim_mirado(ang)
@@ -71,11 +74,11 @@ with Carrinho(modo=modo) as c:
 
             a.espera_botao()
             estimativa = a.quantos_graus()
-            dist = a.distancia()
+            #dist = a.distancia()
             
-            estimativas[i] = [ang, estimativa, dist]
+            estimativas[i] = [ang, estimativa]
             print(f'Verdadeiro: {round(ang)}, Estimado: {round(estimativa)}')
 
 now = datetime.now()
 time_str = now.strftime("%D__%H_%M_%S").replace('/','_') 
-np.savetxt(f'estimativas_gaiola_{nome}_{estimulo[:-4]}_{time_str}.csv', estimativas, delimiter=',', fmt='%g', header='verdadeiro, estimado, distancia')
+np.savetxt(f'estimativas_gaiola_{nome}_{estimulo[:-4]}_{time_str}.csv', estimativas, delimiter=',', fmt='%g', header='verdadeiro, estimado')

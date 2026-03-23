@@ -14,7 +14,8 @@ sd.default.device = ['h6', 'sysdefault']  # TODO: cuidado, depende do comp
 
 modo = 'azimute' #'eleva'
 
-estimulo = 'chiado_300_3000_silencio_75db'
+#estimulo = 'chiado_300_3000_silencio_75db'
+estimulo = 'burst500Hz'
 
 angulos = range(-90,91,15)
 

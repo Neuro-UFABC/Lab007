@@ -43,10 +43,11 @@ with Apontador(modo) as a:
     a.espera_botao()
     time.sleep(0.5)
 
-    repete = 4
+    repete = 2 #4
     sons = repete * list(glob('*.wav')) 
 
-    sons_filtros = [(arq, f) for arq in sons for f in (None, filtro)]
+    #sons_filtros = [(arq, f) for arq in sons for f in (None, filtro)]
+    sons_filtros = [(arq, f) for arq in sons for f in (filtro, filtro)]
 
 
     shuffle(sons_filtros)
