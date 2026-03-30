@@ -72,11 +72,14 @@ resultados = np.zeros((len(sons),5), dtype=object)
 
 def trial(apontador, som, ganho, filtro):
     ang_real = som.split('_')[-1].split('.')[0]
+
     ga = [ganho, ganho]
-    t0 = time.perf_counter()
     _toca(som, filtro=filtro, ganho=ga)
+
+    t0 = time.perf_counter()
     apontador.espera_botao()
     tr = time.perf_counter() - t0
+
     estimativa = apontador.quantos_graus()
     print(f'Verdadeiro:{ang_real}, Estimado:{round(estimativa)}, {som}, tempo:{tr:.2f}\n')
     return ang_real, estimativa, tr
