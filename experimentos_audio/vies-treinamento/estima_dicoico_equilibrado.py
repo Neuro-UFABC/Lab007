@@ -1,7 +1,7 @@
 import os
 import time
 import sys
-from random import choice
+from random import choice, sample
 import numpy as np
 from glob import glob
 from datetime import datetime
@@ -49,12 +49,11 @@ except IndexError:
     sys.exit(1)
 
     
-
-print(f'## Estima Gaiola equilabrado com sequência {seq}')
+print(f'## Estima Dicóico equilibrado com sequência {seq}')
 
 tx, ref_volume = wavfile_pra_array('tom500Hz70dB_referencia_para_fone.wav')
 
-# entra dir com gravações
+# entra dir com estímulos
 os.chdir(nome)
 
 tx, zero = wavfile_pra_array(glob('*_0.wav')[0])
@@ -68,11 +67,20 @@ ganho = ganho_normalizador(zero, ref_volume, tx)
 
 controlador = ControladorExperimento()
 sons = [glob(f'*_{int(az)}.wav')[0] for az in seq]
-estimativas = np.zeros((len(sons),4), dtype=object)
+resultados = np.zeros((len(sons),4), dtype=object)
+
+
+def trial(apontador, som, ganho, filtro):
+    ang_real = som.split('_')[-1].split('.')[0]
+    ga = [ganho, ganho]
+    _toca(som, filtro=filtro, ganho=ga)
+    apontador.espera_botao()
+    estimativa = apontador.quantos_graus()
+    print(f'Verdadeiro:{ang_real}, Estimado:{round(estimativa)}, {som}\n')
+    return ang_real, estimativa
+
 
 with Apontador(modo) as a: 
-    #a.calibra_linear()
-    #time.sleep(0.5)
     a.calibra()
     time.sleep(0.5)
 
@@ -81,21 +89,33 @@ with Apontador(modo) as a:
     time.sleep(0.5)
 
     controlador.start()
+
+    # trials de teste
+    n_teste = 2
+    for i,som in enumerate(sample(sons,n_teste)):
+        controlador.espera_se_pausado()
+        print(f'[TESTE {i+1}/{n_teste}]', end='')
+        ang, estimativa = trial(a, som, ganho, filtro)
+
+    print("\n### Treino finalizado ###")
+    print("Explique a tarefa ao participante.")
+    print("Pressione ENTER para iniciar a coleta.")
+
+    controlador.pausado = True
+    controlador.espera_se_pausado()
+
+    # trials de verdade
     for i,som in enumerate(sons):
 
         controlador.espera_se_pausado()
 
         print(f'[{i+1}/{len(sons)}]', end='')
-        ang = som.split('_')[-1].split('.')[0]
-        ga = [ganho, ganho]
-        _toca(som, filtro=filtro, ganho=ga)
-        a.espera_botao()
-        estimativa = a.quantos_graus()
-        #dist = a.distancia()
-        estimativas[i] = [int(ang), estimativa, som, filtro]
-        print(f'Verdadeiro:{ang}, Estimado:{round(estimativa)}, {som}\n')
+            
+        ang, estimativa = trial(a, som, ganho, filtro)
+        resultados[i] = [int(ang), estimativa, som, filtro]
+
 
 now = datetime.now()
 time_str = now.strftime("%D__%H_%M_%S").replace('/','_') 
 
-np.savetxt(f'estimativas_dicoico_{nome}_{time_str}.csv', estimativas, delimiter=',', fmt='%g, %g, %s, %s', header='verdadeiro, estimado, estimulo, filtro')
+np.savetxt(f'estimativas_dicoico_{nome}_{time_str}.csv', resultados, delimiter=',', fmt='%g, %g, %s, %s', header='verdadeiro, estimado, estimulo, filtro')

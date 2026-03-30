@@ -11,7 +11,7 @@ def banner(msg):
 class ControladorExperimento:
 
     def __init__(self):
-        self.paused = False
+        self.pausado = False
         self.listener = keyboard.Listener(on_press=self.on_press)
 
     def start(self):
@@ -19,14 +19,14 @@ class ControladorExperimento:
 
     def on_press(self, key):
 
-        if key == keyboard.Key.space and not self.paused:
-            self.paused = True
+        if key == keyboard.Key.space and not self.pausado:
+            self.pausado = True
             banner("Interrompido! Aperte ENTER para continuar")
 
-        elif key == keyboard.Key.enter and self.paused:
-            self.paused = False
+        elif key == keyboard.Key.enter and self.pausado:
+            self.pausado = False
             print("\nContinuando experimento...\n")
 
     def espera_se_pausado(self):
-        while self.paused:
+        while self.pausado:
             time.sleep(0.1)
