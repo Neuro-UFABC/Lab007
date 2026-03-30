@@ -219,8 +219,10 @@ def generate_itd_sweep():
 # ---------------------------------------------------------
 
 if __name__ == "__main__":
+    import sys
+    from pathlib import Path
 
-    folder = "Pavao2026mar1148"
+    folder = Path(sys.argv[1])
 
     azim = np.arange(-90, 91, 15)
 
