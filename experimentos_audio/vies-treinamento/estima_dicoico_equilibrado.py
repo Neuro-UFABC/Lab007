@@ -67,17 +67,19 @@ ganho = ganho_normalizador(zero, ref_volume, tx)
 
 controlador = ControladorExperimento()
 sons = [glob(f'*_{int(az)}.wav')[0] for az in seq]
-resultados = np.zeros((len(sons),4), dtype=object)
+resultados = np.zeros((len(sons),5), dtype=object)
 
 
 def trial(apontador, som, ganho, filtro):
     ang_real = som.split('_')[-1].split('.')[0]
     ga = [ganho, ganho]
+    t0 = time.perf_counter()
     _toca(som, filtro=filtro, ganho=ga)
     apontador.espera_botao()
+    tr = time.perf_counter() - t0
     estimativa = apontador.quantos_graus()
-    print(f'Verdadeiro:{ang_real}, Estimado:{round(estimativa)}, {som}\n')
-    return ang_real, estimativa
+    print(f'Verdadeiro:{ang_real}, Estimado:{round(estimativa)}, {som}, tempo:{tr:.2f}\n')
+    return ang_real, estimativa, tr
 
 
 with Apontador(modo) as a: 
@@ -95,7 +97,7 @@ with Apontador(modo) as a:
     for i,som in enumerate(sample(sons,n_teste)):
         controlador.espera_se_pausado()
         print(f'[TESTE {i+1}/{n_teste}]', end='')
-        ang, estimativa = trial(a, som, ganho, filtro)
+        ang, estimativa, tr = trial(a, som, ganho, filtro)
 
     print("\n### Treino finalizado ###")
     print("Explique a tarefa ao participante.")
@@ -111,11 +113,11 @@ with Apontador(modo) as a:
 
         print(f'[{i+1}/{len(sons)}]', end='')
             
-        ang, estimativa = trial(a, som, ganho, filtro)
-        resultados[i] = [int(ang), estimativa, som, filtro]
+        ang, estimativa, tr = trial(a, som, ganho, filtro)
+        resultados[i] = [int(ang), estimativa, som, tr, filtro]
 
 
 now = datetime.now()
 time_str = now.strftime("%D__%H_%M_%S").replace('/','_') 
 
-np.savetxt(f'estimativas_dicoico_{nome}_{time_str}.csv', resultados, delimiter=',', fmt='%g, %g, %s, %s', header='verdadeiro, estimado, estimulo, filtro')
+np.savetxt(f'estimativas_dicoico_{nome}_{time_str}.csv', resultados, delimiter=',', fmt='%g, %g, %s, %g, %s', header='verdadeiro, estimado, estimulo, tempo resp, filtro')
