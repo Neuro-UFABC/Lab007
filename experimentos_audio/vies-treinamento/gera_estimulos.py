@@ -24,25 +24,47 @@ def filtro500Hz(x, fs):
     return sig.filtfilt(b, a, x)
 
 
-def risefall_onset(t, onset, dur, rise, fall):
-    """Generate envelope with rise/fall ramps."""
-    env = np.zeros_like(t)
+def risefall_onset(t, onset, duracao, risetime, decaytime):
+    """
+    Python equivalent of MATLAB risefall_onset using raised cosine.
 
-    start = onset
-    stop = onset + dur
+    envelope = risefall_onset(t, onset, duracao, risetime, decaytime)
 
-    for i, ti in enumerate(t):
-        if start <= ti <= stop:
-            env[i] = 1
+    Parameters
+    ----------
+    t : ndarray
+        Time vector (seconds)
+    onset : float
+        Envelope onset time
+    duracao : float
+        Total duration of envelope
+    risetime : float
+        Rise time
+    decaytime : float
+        Decay time
+    """
 
-    # smooth with Tukey-like ramps
-    ramp_up = np.logical_and(t >= start, t <= start + rise)
-    ramp_down = np.logical_and(t >= stop - fall, t <= stop)
+    uptime = duracao - decaytime - risetime
 
-    env[ramp_up] *= (t[ramp_up] - start) / rise
-    env[ramp_down] *= (stop - t[ramp_down]) / fall
+    # rising envelope
+    envelopesobe = 0.5 * (1 - np.cos(2 * np.pi * (1/(2*risetime)) * (t - onset)))
 
-    return env
+    envelopesobe = envelopesobe.copy()
+    envelopesobe[t < onset] = 0
+    envelopesobe[t > onset + risetime] = 1
+
+    offset = onset + risetime + uptime
+
+    # falling envelope
+    envelopedesce = 0.5 * (1 + np.cos(2 * np.pi * (1/(2*decaytime)) * (t - offset)))
+
+    envelopedesce = envelopedesce.copy()
+    envelopedesce[t < offset] = 1
+    envelopedesce[t > offset + decaytime] = 0
+
+    envelope = envelopesobe * envelopedesce
+
+    return envelope
 
 
 # ---------------------------------------------------------
@@ -60,8 +82,7 @@ def extract_itd_ild(folder, azim, filtro_file):
     idx2a6ms = np.arange(int(0.002*fs), int(0.006*fs))
 
     dur_rampa = np.array(
-        [0,0.001,0.002,0.003,0.004,0.005,0.006,
-         0.007,0.008,0.009,0.010,0.025,0]
+        [0,0]
     )
 
     ITD = np.zeros((len(azim), len(dur_rampa)))
@@ -72,7 +93,7 @@ def extract_itd_ild(folder, azim, filtro_file):
 
     for ai, a in enumerate(azim):
 
-        file = f"{folder}/{folder}_variasrampas48_{a}.wav"
+        file = f"{folder}/para_estimar_ITD_ILD/2tons0ms_{a}.wav"
         som, fs = sf.read(file)
 
         # equalization
@@ -84,7 +105,6 @@ def extract_itd_ild(folder, azim, filtro_file):
         som[:,1] = filtro500Hz(som[:,1], fs)
 
         idxwindow = onset1 + window
-
         base = som[idxbase,:].flatten()
         mediabase = base.mean()
         desviobase = base.std()
@@ -121,7 +141,7 @@ def extract_itd_ild(folder, azim, filtro_file):
             absL[ai,r] = np.mean(np.abs(hilL[idx]))
             absR[ai,r] = np.mean(np.abs(hilR[idx]))
 
-    return ITD, ILD, absL, absR, fs
+    return np.mean(ITD,1), np.mean(ILD,1), np.mean(absL,1), np.mean(absR,1), fs
 
 
 # ---------------------------------------------------------
@@ -130,15 +150,12 @@ def extract_itd_ild(folder, azim, filtro_file):
 
 def generate_synthetic(folder, azim, ITD, absL, absR, fs, manipulation):
 
-    outdir = f"sintetico_{manipulation}_{folder}"
+    outdir = f"{folder}/sintetico_{manipulation}"
     os.makedirs(outdir, exist_ok=True)
 
-    abs_L = np.mean(absL[:,[0,12]], axis=1)
-    abs_R = np.mean(absR[:,[0,12]], axis=1)
-
-    norm = max(np.max(abs_L), np.max(abs_R))
-    abs_L /= norm
-    abs_R /= norm
+    norm = max(np.max(absL), np.max(absR))
+    absL /= norm
+    absR /= norm
 
     pausa = 0.250
     dur = 0.050
@@ -147,15 +164,15 @@ def generate_synthetic(folder, azim, ITD, absL, absR, fs, manipulation):
 
     for i,a in enumerate(azim):
 
-        itd = np.mean(ITD[i,[0,12]]) * 1e-6
+        itd = ITD[i] * 1e-6
         itd_phase = itd
         itd_env = itd
 
-        ampL = abs_L[i]
-        ampR = abs_R[i]
+        ampL = absL[i]
+        ampR = absR[i]
 
         if manipulation == "ILDzero":
-            ampL = ampR = np.mean([abs_L[6], abs_R[6]])
+            ampL = ampR = np.mean([absL[6], absR[6]])
 
         if manipulation == "ITDzero":
             itd = itd_phase = itd_env = 0
@@ -176,42 +193,11 @@ def generate_synthetic(folder, azim, ITD, absL, absR, fs, manipulation):
 
         signal = np.tile(signal, (5,1))
 
-        outfile = f"{outdir}/sintetico_{manipulation}_{folder}_{a}.wav"
+        outfile = f"{outdir}/sintetico_{manipulation}_{a}.wav"
         sf.write(outfile, signal, fs)
 
 
-# ---------------------------------------------------------
-# Generate ITD sweep stimuli
-# ---------------------------------------------------------
 
-def generate_itd_sweep():
-
-    fs = 48000
-    itd_vec = np.arange(-720, 721, 120)
-
-    pausa = 0.250
-    dur = 0.050
-
-    t = np.arange(0, pausa+dur+pausa, 1/fs)
-
-    os.makedirs("sintetico_variaITD_ILDzero", exist_ok=True)
-
-    for itd in itd_vec:
-
-        itd_sec = itd * 1e-6
-
-        sigL = np.sin(2*np.pi*500*t)
-        sigR = np.sin(2*np.pi*500*(t + itd_sec))
-
-        envL = risefall_onset(t, pausa + itd_sec, dur, 0.005, 0.005)
-        envR = risefall_onset(t, pausa, dur, 0.005, 0.005)
-
-        signal = np.column_stack([envL*sigL, envR*sigR])
-        signal = np.tile(signal, (5,1))
-
-        outfile = f"sintetico_variaITD_ILDzero/sintetico_ITD{itd}_ILDzero.wav"
-
-        sf.write(outfile, signal, fs)
 
 
 # ---------------------------------------------------------
@@ -229,7 +215,9 @@ if __name__ == "__main__":
     filtro_file = "filtro_equalizacao_hd_mic_ind_48k.wav"
 
     ITD, ILD, absL, absR, fs = extract_itd_ild(folder, azim, filtro_file)
-
+    
+    np.savetxt(f'{folder}/ITD_ILD_azim.txt', np.c_[ITD, ILD, azim])
     generate_synthetic(folder, azim, ITD, absL, absR, fs, "naomanipulado")
+    generate_synthetic(folder, azim, ITD, absL, absR, fs, "ILDzero")
 
-    generate_itd_sweep()
+
