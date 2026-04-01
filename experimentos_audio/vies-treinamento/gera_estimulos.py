@@ -198,26 +198,20 @@ def generate_synthetic(folder, azim, ITD, absL, absR, fs, manipulation):
 
 
 
+def processa_sujeito(suj):
 
+    azim = np.arange(-90, 91, 15)
+    filtro_file = "filtro_equalizacao_hd_mic_ind_48k.wav"
+    ITD, ILD, absL, absR, fs = extract_itd_ild(suj, azim, filtro_file)
+    
+    np.savetxt(f'{suj}/ITD_ILD_azim.txt', np.c_[ITD, ILD, azim])
+    generate_synthetic(suj, azim, ITD, absL, absR, fs, "naomanipulado")
+    generate_synthetic(suj, azim, ITD, absL, absR, fs, "ILDzero")
 
-# ---------------------------------------------------------
-# Main
-# ---------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
-    from pathlib import Path
+    processa_sujeito(sys.argv[1])
 
-    folder = Path(sys.argv[1])
-
-    azim = np.arange(-90, 91, 15)
-
-    filtro_file = "filtro_equalizacao_hd_mic_ind_48k.wav"
-
-    ITD, ILD, absL, absR, fs = extract_itd_ild(folder, azim, filtro_file)
-    
-    np.savetxt(f'{folder}/ITD_ILD_azim.txt', np.c_[ITD, ILD, azim])
-    generate_synthetic(folder, azim, ITD, absL, absR, fs, "naomanipulado")
-    generate_synthetic(folder, azim, ITD, absL, absR, fs, "ILDzero")
 
 
