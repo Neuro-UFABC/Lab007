@@ -16,8 +16,7 @@ modo = 'azimute'
 ##################################################################
 
 try:
-    print('Usando dir', sys.argv[1])
-    nome = sys.argv[1][:-1]
+    sujeito = sys.argv[1]
 except:
     print('Informe um diretório válido contendo as gravações '
             'como parâmetro do programa. Ex:\n '
@@ -25,19 +24,28 @@ except:
     sys.exit(1)
 
 try:
-    seqs = np.loadtxt(sys.argv[2])
-    seq = choice(seqs) 
-except IndexError:
-    print('Forneça o nome do arquivo com a sequência como segundo argumento:\n'
-            '>python estima_dicoico_equilibrado.py XYZ11jan22/ seq.txt comfiltro|semfiltro')
-    sys.exit(1)
-except FileNotFoundError:
-    print(f'Não consegui ler sequência do arquivo {sys.argv[2]}. Ex:\n'
-           '>python estima_dicoico_equilibrado.py XYZ11jan22/ seq.txt comfiltro|semfiltro')
+    dir_ests = sys.argv[2][:-1]
+    print('Usando dir', sys.argv[2])
+except:
+    print('Informe um diretório válido contendo as gravações '
+            'como parâmetro do programa. Ex:\n '
+            '>python estima_dicoico_equilibrado.py sujeito XYZ11jan22/ seq.txt comfiltro|semfiltro')
     sys.exit(1)
 
 try:
-    tem_filtro = sys.argv[3]
+    seqs = np.loadtxt(sys.argv[3])
+    seq = choice(seqs) 
+except IndexError:
+    print('Forneça o nome do arquivo com a sequência como segundo argumento:\n'
+            '>python estima_dicoico_equilibrado.py sujeito XYZ11jan22/ seq.txt comfiltro|semfiltro')
+    sys.exit(1)
+except FileNotFoundError:
+    print(f'Não consegui ler sequência do arquivo {sys.argv[3]}. Ex:\n'
+           '>python estima_dicoico_equilibrado.py sujeito XYZ11jan22/ seq.txt comfiltro|semfiltro')
+    sys.exit(1)
+
+try:
+    tem_filtro = sys.argv[4]
     if tem_filtro == 'comfiltro':
         filtro = '../filtro_equalizacao_hd_mic_ind_48k.wav' 
     elif tem_filtro == 'semfiltro':
@@ -54,7 +62,7 @@ print(f'## Estima Dicóico equilibrado com sequência {seq}')
 tx, ref_volume = wavfile_pra_array('tom500Hz70dB_referencia_para_fone.wav')
 
 # entra dir com estímulos
-os.chdir(nome)
+os.chdir(dir_ests)
 
 tx, zero = wavfile_pra_array(glob('*_0.wav')[0])
 
@@ -96,7 +104,7 @@ with Apontador(modo) as a:
     controlador.start()
 
     # trials de teste
-    n_teste = 2
+    n_teste = 5
     for i,som in enumerate(sample(sons,n_teste)):
         controlador.espera_se_pausado()
         print(f'[TESTE {i+1}/{n_teste}]', end='')
@@ -123,4 +131,5 @@ with Apontador(modo) as a:
 now = datetime.now()
 time_str = now.strftime("%D__%H_%M_%S").replace('/','_') 
 
-np.savetxt(f'estimativas_dicoico_{nome}_{time_str}.csv', resultados, delimiter=',', fmt='%g, %g, %s, %g, %s', header='verdadeiro, estimado, estimulo, tempo resp, filtro')
+os.makedirs(f'../{sujeito}', exist_ok=True)
+np.savetxt(f'../{sujeito}/estimativas_dicoico_{dir_ests}_{time_str}.csv', resultados, delimiter=',', fmt='%g, %g, %s, %g, %s', header='verdadeiro, estimado, estimulo, tempo resp, filtro')
