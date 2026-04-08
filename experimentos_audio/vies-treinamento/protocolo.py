@@ -6,6 +6,7 @@ from estima_gaiola import gaiola
 from gera_estimulos import processa_sujeito
 
 import sounddevice as sd
+import time
 
 def refresh_devices():
     sd._terminate()
@@ -17,88 +18,187 @@ def limpa_tela():
 
 sujeito = sys.argv[1]
 
-######## 1 ############
+print('######### 1 - Estima dicóico ############')
+print('Liga o apontador na USB')
 print('Pluga o fone de ouvido na saída de áudio')
-print('Liga o ponteiro e põe o fone no cara!')
+print('Posiciona o voluntário, mostra fone e apontador')
+print('')
+print('Instruções: “Você ouvirá sons no fone de ouvido, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados durante a')
+print('            execução da tarefa. As primeiras 5 tentativas são só pra treinar,')
+print('            depois começa de verdade.”')
+print('')
 input('Enter pra continuar')
-dicoico(sujeito, 'sintetico_variaITD_ILDzero/', 'sequencias.txt', filtro=None, treino=False, etapa=1)
+try:
+    #dicoico(sujeito, 'sintetico_variaITD_ILDzero/', 'sequencias.txt', filtro=None, treino=True, etapa=1)
+    dicoico(sujeito, 'diamante/', 'sequencias.txt', filtro=None, treino=True, etapa=1)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    #dicoico(sujeito, 'sintetico_variaITD_ILDzero/', 'sequencias.txt', filtro=None, treino=True, etapa=1)
+    dicoico(sujeito, 'diamante/', 'sequencias.txt', filtro=None, treino=True, etapa=1)
 limpa_tela()
 
-######## 2 ############
-print('Pluga o falante na saída de áudio')
+print('#########  2 - Grava oreba ############')
 print('Liga a fonte dos motores de passo')
+print('Liga a H6 na USB e põe os microfones na orelha')
+print('Pluga o falante na saída de áudio')
 print('Zera o falante da gaiola')
-print('Liga a H6 e põe mics nas oreba do cara!')
+print('')
+print('Instruções: “Vamos gravar como os sons chegam na sua orelha. Mantenha a cabeça fixa')
+print('            olhos abertos olhando sempre para o ponto de fixação.”')
+print('')
+time.sleep(0.5)
 input('Enter pra continuar')
-refresh_devices()
-oreba(sujeito)
-limpa_tela()
-
-######## 3 ############
-print('Gerando estimulos a partir das gravações')
+try:
+    refresh_devices()
+    input('Enter pra continuar')
+    refresh_devices()
+    time.sleep(1)
+    oreba(sujeito)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    refresh_devices()
+    time.sleep(0.5)
+    oreba(sujeito)
+print('Gerando estímulos a partir das gravações')
 processa_sujeito(sujeito)
-print('Chame o cara pra ver os gráficos')
+limpa_tela()
+
+print('#########  3 - Mostra os dados pro voluntário ############')
+print('Chama o voluntário pra ver os gráficos.')
+print('')
+print('Instruções: “Esse é o gráfico das média das estimativas em função dos azimutes. Se')
+print('            as estimativas desviaram da linha preta, faça com mais cuidado. Serão')
+print('            apresentados todos os azimutes com mesma frequência, de -90 a 90.”')
+print('')
 mostra(sujeito)
 limpa_tela()
 
-######## 4 ############
-print('Plugue o falante na saída de áudio')
-print('Desplugue a h6')
-print('Liga o ponteiro!')
+print('######### 4 - Estima gaiola ############')
+print('Liga o apontador na USB')
 print('Zera o falante da gaiola')
+print('')
+print('Instruções: “Você ouvirá sons do falante, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados até apertar o')
+print('            botão. Em seguida, abra os olhos para ver onde o falante realmente está.')
+print('            Finalmente, feche os olhos e aperte o botão para continuar com a tarefa.”')
+print('')
 input('Enter pra continuar')
-refresh_devices()
-gaiola(sujeito)
+try:
+    refresh_devices()
+    gaiola(sujeito)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    refresh_devices()
+    gaiola(sujeito)
 limpa_tela()
 
-######## 5 ############
+print('######### 5 - Estima dicóico ############')
 print('Pluga o fone de ouvido na saída de áudio')
+print('')
+print('Instruções: “Você ouvirá sons no fone de ouvido, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados durante a')
+print('            execução da tarefa.”')
+print('')
 input('Enter pra continuar')
-dicoico(sujeito, f'{sujeito}/sintetico_naomanipulado/', 'sequencias.txt', filtro=None, treino=False, etapa=2)
+try:
+    dicoico(sujeito, f'{sujeito}/sintetico_naomanipulado/', 'sequencias.txt', filtro=None, treino=False, etapa=2)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    dicoico(sujeito, f'{sujeito}/sintetico_naomanipulado/', 'sequencias.txt', filtro=None, treino=False, etapa=2)
 limpa_tela()
 
-######## 6 ############
-print('Chame o cara pra ver os gráficos')
+print('#########  6 - Mostra os dados pro voluntário ############')
+print('Chama o cara pra ver os gráficos')
+print('')
+print('Instruções: “Esse é o gráfico das média das estimativas em função dos azimutes. Se')
+print('            as estimativas desviaram da linha preta, faça com mais cuidado. Serão')
+print('            apresentados todos os azimutes com mesma frequência, de -90 a 90.”')
+print('')
 mostra(sujeito)
 limpa_tela()
 
 
-######## 7 ############
-print('Plugue o falante na saída de áudio')
+print('######### 7 - Estima gaiola ############')
+print('Pluga o falante na saída de áudio')
 print('Zera o falante da gaiola')
+print('')
+print('Instruções: “Você ouvirá sons do falante, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados até apertar o')
+print('            botão. Em seguida, abra os olhos para ver onde o falante realmente está.')
+print('            Finalmente, feche os olhos e aperte o botão para continuar com a tarefa.”')
 input('Enter pra continuar')
-gaiola(sujeito)
+try:
+    gaiola(sujeito)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    gaiola(sujeito)
 limpa_tela()
 
-######## 8 ############
+print('######### 8 - Estima dicóico ############')
 print('Pluga o fone de ouvido na saída de áudio')
+print('')
+print('Instruções: “Você ouvirá sons no fone de ouvido, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados durante a')
+print('            execução da tarefa.”')
+print('')
 input('Enter pra continuar')
-dicoico(sujeito, f'{sujeito}/sintetico_naomanipulado/', 'sequencias.txt', filtro=None, treino=False, etapa=3)
+try:
+    dicoico(sujeito, f'{sujeito}/sintetico_naomanipulado/', 'sequencias.txt', filtro=None, treino=False, etapa=3)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    dicoico(sujeito, f'{sujeito}/sintetico_naomanipulado/', 'sequencias.txt', filtro=None, treino=False, etapa=3)
 limpa_tela()
 
 
-######## 9 ############
-print('Chame o cara pra ver os gráficos')
+print('#########  9 - Mostra os dados pro voluntário ############')
+print('Chama o cara pra ver os gráficos')
+print('')
+print('Instruções: “Esse é o gráfico das média das estimativas em função dos azimutes. Se')
+print('            as estimativas desviaram da linha preta, faça com mais cuidado. Serão')
+print('            apresentados todos os azimutes com mesma frequência, de -90 a 90.”')
+print('')
 mostra(sujeito)
 limpa_tela()
 
 
-######## 10 ############
-print('Plugue o falante na saída de áudio')
+print('######### 10 - Estima gaiola ############')
+print('Pluga o falante na saída de áudio')
 print('Zera o falante da gaiola')
+print('')
+print('Instruções: “Você ouvirá sons do falante, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados até apertar o')
+print('            botão. Em seguida, abra os olhos para ver onde o falante realmente está.')
+print('            Finalmente, feche os olhos e aperte o botão para continuar com a tarefa.”')
 input('Enter pra continuar')
-gaiola(sujeito)
+try:
+    gaiola(sujeito)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    gaiola(sujeito)
 limpa_tela()
 
 
-######## 11 ############
+print('######### 11 - Estima dicóico ############')
 print('Pluga o fone de ouvido na saída de áudio')
+print('')
+print('Instruções: “Você ouvirá sons no fone de ouvido, aponte pra onde acha que está e')
+print('            aperte o botão. Mantenha a cabeça fixa e seus olhos fechados durante a')
+print('            execução da tarefa.”')
+print('')
 input('Enter pra continuar')
-dicoico(sujeito, 'sintetico_variaITD_ILDzero/', 'sequencias.txt', filtro=None, treino=False, etapa=4)
+try:
+    #dicoico(sujeito, 'sintetico_variaITD_ILDzero/', 'sequencias.txt', filtro=None, treino=False, etapa=4)
+    dicoico(sujeito, 'diamante/', 'sequencias.txt', filtro=None, treino=True, etapa=4)
+except:
+    input('Problema! Aperte enter pra tentar de novo')
+    #dicoico(sujeito, 'sintetico_variaITD_ILDzero/', 'sequencias.txt', filtro=None, treino=False, etapa=4)
+    dicoico(sujeito, 'diamante/', 'sequencias.txt', filtro=None, treino=True, etapa=4)
 limpa_tela()
 
 
-######## 12 ############
-print('Chame o cara pra ver os gráficos')
+print('#########  12 - Mostra os dados pro voluntário ############')
+print('Chama o cara pra ver os gráficos')
+print('')
 mostra(sujeito)
 limpa_tela()
