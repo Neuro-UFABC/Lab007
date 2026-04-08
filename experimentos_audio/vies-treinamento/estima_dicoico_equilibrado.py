@@ -10,7 +10,7 @@ import sounddevice as sd
 
 from audio007.audio_utils import filtra, _toca, nivel, ganho_normalizador, wavfile_pra_array
 from audio007.apontador import Apontador
-from controlador_experimento import ControladorExperimento
+#from controlador_experimento import ControladorExperimento
 
 
 modo = 'azimute'
@@ -33,7 +33,7 @@ def dicoico(sujeito, dir_ests, seqs, filtro, etapa=0, treino=False, calibra=Fals
     ganho = ganho_normalizador(zero, ref_volume, tx)
     
     
-    controlador = ControladorExperimento()
+    #controlador = ControladorExperimento()
     sons = [glob(f'{dir_ests}/*_{int(az)}.wav')[0] for az in seq]
     resultados = np.zeros((len(sons),5), dtype=object)
     
@@ -62,13 +62,13 @@ def dicoico(sujeito, dir_ests, seqs, filtro, etapa=0, treino=False, calibra=Fals
         a.espera_botao()
         time.sleep(0.5)
     
-        controlador.start()
+        #controlador.start()
     
-        # trials de teste
+        # trials de treino
         if treino:
             n_teste = 5
             for i,som in enumerate(sample(sons,n_teste)):
-                controlador.espera_se_pausado()
+                #controlador.espera_se_pausado()
                 print(f'[TESTE {i+1}/{n_teste}]', end='')
                 ang, estimativa, tr = trial(a, som, ganho, filtro)
     
@@ -76,13 +76,13 @@ def dicoico(sujeito, dir_ests, seqs, filtro, etapa=0, treino=False, calibra=Fals
             print("Explique a tarefa ao participante.")
             print("Pressione ENTER para iniciar a coleta.")
     
-            controlador.pausado = True
-            controlador.espera_se_pausado()
+            #controlador.pausado = True
+            #controlador.espera_se_pausado()
     
         # trials de verdade
         for i,som in enumerate(sons):
     
-            controlador.espera_se_pausado()
+            #controlador.espera_se_pausado()
     
             print(f'[{i+1}/{len(sons)}]', end='')
                 
