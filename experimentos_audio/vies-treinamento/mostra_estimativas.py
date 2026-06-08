@@ -16,7 +16,7 @@ def mostra(suj):
     ax.set_ylabel('Azimute estimado')
     ax.grid(True)
 
-    for arq_estimativas in glob.glob(f'{suj}/estimativas_dicoico*.csv'):
+    for arq_estimativas in sorted(glob.glob(f'{suj}/estimativas_dicoico*.csv')):
         etapa = int(arq_estimativas[-5])
         print(arq_estimativas, 'etapa', etapa)
 
@@ -26,7 +26,8 @@ def mostra(suj):
         if etapa == 1 or etapa == 4:
             ITD, ILD, az = np.loadtxt(f'{suj}/ITD_ILD_azim.txt').T
             itd2az = interp1d(ITD, az, fill_value="extrapolate", bounds_error=False)
-            ITD_estimulos = np.arange(-720,721,120)
+            ITD_estimulos = np.arange(-720,721,120)  
+            #ITD_estimulos = np.arange(-300,301,50)  # NOVA SERIE
             azim_verdadeiro = itd2az(ITD_estimulos) 
         if etapa == 2 or etapa == 3:
             azim_verdadeiro = np.arange(-90,91,15)
